@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wattwise · Forecast. Detect. Reduce.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#070a12;--glass:rgba(255,255,255,.045);--glass2:rgba(255,255,255,.08);--line:rgba(255,255,255,.09);--tx:#eef2fb;--mut:#8f9bb3;--g1:#34e0a1;--g2:#4aa8ff;--vio:#a78bfa;--amb:#fbbf24;--red:#ff6b7d;--grad:linear-gradient(135deg,#34e0a1,#4aa8ff)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.55 Inter,system-ui,sans-serif;display:flex;min-height:100vh;overflow-x:hidden}
+.aurora{position:fixed;inset:0;z-index:-1;overflow:hidden}.aurora i{position:absolute;border-radius:50%;filter:blur(110px);opacity:.38;animation:fl 18s ease-in-out infinite alternate}
+.aurora i:nth-child(1){width:520px;height:520px;background:#10b981;top:-160px;left:-120px}.aurora i:nth-child(2){width:560px;height:560px;background:#3b82f6;right:-180px;top:12%;animation-delay:-6s}.aurora i:nth-child(3){width:460px;height:460px;background:#8b5cf6;bottom:-200px;left:30%;animation-delay:-11s;opacity:.28}
+@keyframes fl{to{transform:translate(70px,50px) scale(1.15)}}
+nav{width:244px;padding:22px 16px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;border-right:1px solid var(--line);background:rgba(7,10,18,.55);backdrop-filter:blur(18px);z-index:5}
+.logo{display:flex;gap:11px;align-items:center;margin:0 6px 26px}.logo b{width:40px;height:40px;border-radius:12px;background:var(--grad);display:grid;place-items:center;box-shadow:0 0 28px #34e0a166;color:#04120c}
+.logo h1{font-size:19px;margin:0;font-weight:800;letter-spacing:-.4px}.logo small{display:block;color:var(--mut);font-size:11px;margin-top:-2px}
+nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;color:var(--mut);text-decoration:none;margin-bottom:4px;font-weight:500;transition:.25s;position:relative}
+nav a svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+nav a:hover{color:var(--tx);background:var(--glass)}nav a.on{color:#fff;background:linear-gradient(90deg,#34e0a126,#4aa8ff12);box-shadow:inset 0 0 0 1px #34e0a133}
+nav a.on:before{content:"";position:absolute;left:-16px;top:10px;bottom:10px;width:3px;border-radius:3px;background:var(--grad)}
+.st{margin-top:auto;padding:12px 14px;border-radius:14px;background:var(--glass);border:1px solid var(--line);font-size:12px;color:var(--mut);display:flex;gap:10px;align-items:center}
+.st i{width:9px;height:9px;border-radius:50%;background:var(--red);flex:none}.st.ok i{background:var(--g1);box-shadow:0 0 0 0 #34e0a1aa;animation:pl 2s infinite}
+@keyframes pl{70%{box-shadow:0 0 0 9px #34e0a100}}
+main{flex:1;padding:32px 38px 60px;max-width:1280px;min-width:0}
+.page{animation:in .55s cubic-bezier(.2,.8,.2,1)}@keyframes in{from{opacity:0;transform:translateY(14px)}}
+.hd{margin-bottom:24px}.hd h2{margin:0;font-size:32px;font-weight:800;letter-spacing:-1px;background:linear-gradient(90deg,#fff,#a9b8d6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hd p{margin:6px 0 0;color:var(--mut);max-width:680px}
+.card{background:var(--glass);border:1px solid var(--line);border-radius:20px;padding:20px 22px;margin-bottom:18px;backdrop-filter:blur(14px);position:relative;transition:.3s}
+.card h3{margin:0 0 14px;font-size:15px;font-weight:600;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:16px;margin-bottom:18px}.grid .card{margin:0}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:18px}.g2 .card{margin:0}
+.kpi:hover{transform:translateY(-4px);border-color:#34e0a155;box-shadow:0 16px 40px -18px #34e0a1aa}
+.kpi .ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;margin-bottom:14px}.kpi .ic svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.k{color:var(--mut);font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.7px}.v{font-size:32px;font-weight:800;letter-spacing:-1px;line-height:1.2;margin-top:2px}.v small{font-size:14px;color:var(--mut);font-weight:500;letter-spacing:0}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600}.up{background:#ff6b7d22;color:var(--red)}.dn{background:#34e0a122;color:var(--g1)}.neu{background:var(--glass2);color:var(--mut)}
+.seg{display:inline-flex;background:rgba(0,0,0,.3);border:1px solid var(--line);border-radius:12px;padding:3px}.seg button{background:none;color:var(--mut);border:0;padding:7px 14px;border-radius:9px;font:600 13px Inter;cursor:pointer;transition:.2s}.seg button.on{background:var(--grad);color:#04120c;box-shadow:0 4px 16px -4px #34e0a199}
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px}
+label{display:flex;flex-direction:column;font-size:12px;color:var(--mut);gap:6px;font-weight:500}
+input,select{background:rgba(0,0,0,.35);color:var(--tx);border:1px solid var(--line);border-radius:11px;padding:10px 12px;font:inherit;outline:0;transition:.2s;min-width:0}input:focus,select:focus{border-color:var(--g1);box-shadow:0 0 0 3px #34e0a122}
+input[type=range]{padding:0;height:6px;accent-color:#34e0a1;appearance:auto;min-width:170px}
+button.go{background:var(--grad);color:#04120c;border:0;font:700 14px Inter;padding:11px 22px;border-radius:12px;cursor:pointer;transition:.25s;box-shadow:0 8px 24px -8px #34e0a1bb}button.go:hover{transform:translateY(-2px);box-shadow:0 12px 30px -8px #4aa8ffcc}button.go:active{transform:none}
+.cv{height:340px;position:relative}.cv.s{height:260px}
+.note{color:var(--mut);font-size:12px;margin-top:12px;display:flex;gap:8px;line-height:1.5}.note:before{content:"i";flex:none;width:16px;height:16px;border-radius:50%;background:var(--glass2);display:grid;place-items:center;font-size:10px;font-weight:700;color:var(--g2);margin-top:1px}
+.hero{background:linear-gradient(135deg,#34e0a122,#4aa8ff1c 55%,#a78bfa1a);border-color:#34e0a144;display:flex;gap:30px;flex-wrap:wrap;align-items:center;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:var(--grad);opacity:.14;filter:blur(30px)}
+.hero .big{font-size:46px;font-weight:800;letter-spacing:-2px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1.1}
+.sc{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}.sc button{all:unset;cursor:pointer;background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:14px 16px;transition:.25s;position:relative}
+.sc button:hover{transform:translateY(-3px);background:var(--glass2)}.sc button.on{border-color:var(--g1);background:#34e0a114;box-shadow:0 10px 30px -14px #34e0a1}.sc button.nf{opacity:.45}
+.sc b{font-size:22px;font-weight:800}.sc span{display:block;font-size:12px;color:var(--mut)}.sc .tg{position:absolute;top:-9px;right:10px;background:var(--grad);color:#04120c;font-size:10px;font-weight:800;padding:2px 9px;border-radius:99px}
+.res{font-size:42px;font-weight:800;letter-spacing:-1.5px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-family:'JetBrains Mono',monospace}
+.al{display:grid;grid-template-columns:150px 1fr 90px 90px;gap:14px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--line);animation:in .5s both}.al:last-child{border:0}
+.al.h{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.7px;padding-top:0}
+.meter{height:8px;border-radius:8px;background:rgba(255,255,255,.07);overflow:hidden}.meter b{display:block;height:100%;border-radius:8px;background:var(--grad);transition:width 1s cubic-bezier(.2,.8,.2,1)}
+.meter.hi b{background:linear-gradient(90deg,#fbbf24,#ff6b7d)}
+.tag{padding:3px 11px;border-radius:99px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;text-align:center}.high{background:#ff6b7d26;color:var(--red)}.medium{background:#fbbf2426;color:var(--amb)}
+.hm{display:grid;grid-template-columns:42px repeat(24,minmax(0,1fr));gap:4px;font-size:10px;color:var(--mut);align-items:center}.hm .c{aspect-ratio:1;border-radius:6px;transition:.2s;cursor:pointer}.hm .c:hover{transform:scale(1.5);z-index:3;box-shadow:0 6px 18px #000a;position:relative}
+.leg{height:10px;border-radius:8px;width:240px;background:linear-gradient(90deg,#1b2440,#2b6cb0,#34e0a1,#fbbf24,#ff6b7d)}
+.ins{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:18px}
+.bar{display:grid;grid-template-columns:92px 1fr 54px;align-items:center;gap:12px;margin:10px 0;font-size:13px}.bar span{color:var(--mut)}.bar em{font-style:normal;font-weight:600;text-align:right}
+.lb{display:grid;grid-template-columns:34px 1fr;gap:14px;align-items:center;margin:16px 0}.rk{width:34px;height:34px;border-radius:10px;background:var(--glass2);display:grid;place-items:center;font-weight:800}.lb.w .rk{background:var(--grad);color:#04120c}
+.sk{border-radius:12px;background:linear-gradient(90deg,var(--glass) 25%,var(--glass2) 50%,var(--glass) 75%);background-size:200% 100%;animation:sh 1.3s infinite;height:120px;margin-bottom:16px}@keyframes sh{to{background-position:-200% 0}}
+#toast{position:fixed;bottom:24px;right:24px;background:#2a1018;border:1px solid #ff6b7d66;color:#ffb3bd;padding:14px 18px;border-radius:14px;max-width:340px;transform:translateY(120px);opacity:0;transition:.4s;z-index:20}#toast.on{transform:none;opacity:1}
+@media(max-width:860px){body{display:block}nav{position:fixed;inset:auto 0 0 0;width:auto;height:auto;flex-direction:row;padding:8px;z-index:30;border:0;border-top:1px solid var(--line);justify-content:space-around}
+nav .logo,nav .st{display:none}nav a{flex-direction:column;gap:3px;font-size:10px;padding:8px 6px;margin:0}nav a.on:before{display:none}main{padding:22px 16px 100px}.hd h2{font-size:26px}.al{grid-template-columns:100px 1fr 70px}.al>:nth-child(3){display:none}.hero .big{font-size:36px}.hm{gap:2px}.hm .c{border-radius:3px}}
+</style></head><body>
+<div class="aurora"><i></i><i></i><i></i></div>
+<nav><div class="logo"><b><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6z"/></svg></b><div><h1>Wattwise</h1><small>Forecast. Detect. Reduce.</small></div></div>
+<a href="#/overview"><svg viewBox="0 0 24 24"><path d="M3 12 12 3l9 9M5 10v10h14V10"/></svg>Overview</a>
+<a href="#/forecast"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-9M15 6h6v6"/></svg>Forecast</a>
+<a href="#/anomalies"><svg viewBox="0 0 24 24"><path d="M12 3 2 20h20zM12 10v5M12 17.5v.5"/></svg>Anomalies</a>
+<a href="#/twin"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Digital Twin</a>
+<a href="#/optimize"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-4 12.7V18h8v-3.3A7 7 0 0 0 12 2zM9 21h6"/></svg>Optimizer</a>
+<a href="#/models"><svg viewBox="0 0 24 24"><path d="M9 3v6L4 19a2 2 0 0 0 2 3h12a2 2 0 0 0 2-3l-5-10V3M8 3h8"/></svg>Model Lab</a>
+<div class="st" id="st"><i></i><span>Checking API…</span></div></nav>
+<main id="app"></main><div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const api=async(p,o)=>{const r=await fetch('/api'+p,o);if(!r.ok){let m=r.statusText;try{m=(await r.json()).detail||m}catch{}throw new Error(typeof m==='string'?m:JSON.stringify(m))}return r.json()};
+const post=(p,b)=>api(p,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(b)});
+const fmt=(t,o)=>new Date(t).toLocaleString('en-GB',o||{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+const DAYS=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],CH={};
+const IC={bolt:'<path d="M13 2 4 14h6l-1 8 9-12h-6z"/>',db:'<ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',peak:'<path d="M3 20 9 8l4 7 3-5 5 10z"/>',trend:'<path d="M3 17l6-6 4 4 8-9M15 6h6v6"/>',leaf:'<path d="M5 19C5 9 11 4 20 4c0 9-5 15-15 15zM5 19l8-8"/>',cash:'<circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5c0-1 1.3-1.5 3-1.5s3 .6 3 1.8-1.5 1.6-3 2-3 .8-3 2S10.3 16 12 16s3-.5 3-1.5"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'};
+const ico=(n,c)=>`<div class="ic" style="background:${c};box-shadow:0 8px 20px -8px ${c}"><svg viewBox="0 0 24 24">${IC[n]}</svg></div>`;
+const head=(t,s)=>`<div class="hd"><h2>${t}</h2><p>${s}</p></div>`;
+const kpi=(k,v,ic,c,extra='',dec=0,suf='')=>`<div class="card kpi">${ico(ic,c)}<div class="k">${k}</div><div class="v" data-n="${v}" data-d="${dec}">${v}</div>${suf?`<small style="color:var(--mut)">${suf}</small>`:''} ${extra}</div>`;
+function count(){$$('[data-n]').forEach(el=>{const to=+el.dataset.n,d=+el.dataset.d;if(isNaN(to))return;const t0=performance.now();(function f(t){const p=Math.min(1,(t-t0)/900),e=1-Math.pow(1-p,3);el.textContent=(to*e).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d});if(p<1)requestAnimationFrame(f)})(t0)})}
+const sk=()=>$('#app').innerHTML='<div class="sk" style="height:90px;width:50%"></div><div class="grid"><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div></div><div class="sk" style="height:340px"></div>';
+const toast=m=>{const t=$('#toast');t.textContent='⚠ '+m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),4500)};
+const fail=e=>{toast(e.message)};
+const seg=(id,opts,def)=>`<div class="seg" id="${id}">${opts.map(o=>`<button data-v="${o[0]}" class="${o[0]==def?'on':''}">${o[1]}</button>`).join('')}</div>`;
+const segv=id=>$(`#${id} .on`).dataset.v;
+const segbind=(id,fn)=>$$(`#${id} button`).forEach(b=>b.onclick=()=>{$$(`#${id} button`).forEach(x=>x.classList.remove('on'));b.classList.add('on');fn()});
+Chart.defaults.color='#8f9bb3';Chart.defaults.font.family='Inter,system-ui,sans-serif';
+const grad=(c,a=.45)=>ctx=>{const{chart:ch}=ctx;if(!ch.chartArea)return c+'00';const g=ch.ctx.createLinearGradient(0,ch.chartArea.top,0,ch.chartArea.bottom);g.addColorStop(0,c+Math.round(a*255).toString(16).padStart(2,'0'));g.addColorStop(1,c+'00');return g};
+function line(id,labels,sets,o={}){CH[id]&&CH[id].destroy();CH[id]=new Chart($(id),{type:o.type||'line',data:{labels,datasets:sets.map(s=>({pointRadius:0,pointHoverRadius:5,borderWidth:2.4,tension:.35,...s}))},
+ options:{responsive:true,maintainAspectRatio:false,animation:{duration:1100,easing:'easeOutQuart'},interaction:{mode:'index',intersect:false},
+ plugins:{legend:{align:'end',labels:{usePointStyle:true,pointStyle:'circle',boxWidth:8,color:'#b6c0d6'}},tooltip:{backgroundColor:'#0b1020ee',borderColor:'#ffffff22',borderWidth:1,padding:12,cornerRadius:12,titleColor:'#fff',callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.y==null?'–':(+c.parsed.y).toFixed(2)+' kWh'}`}}},
+ scales:{x:{ticks:{maxTicksLimit:8,maxRotation:0},grid:{display:false},border:{display:false}},y:{beginAtZero:true,title:{display:true,text:'kWh'},grid:{color:'#ffffff0d'},border:{display:false}}}}})}
+const pages={
+async overview(){const[o,p]=await Promise.all([api('/overview'),api('/profile')]);const d=(o.last_7d_mean_kwh/o.prev_7d_mean_kwh-1)*100;
+ const hr=[...Array(24).keys()].map(h=>{const r=p.filter(x=>x.hour==h);return r.reduce((a,x)=>a+x.kwh,0)/r.length});
+ $('#app').innerHTML=head('Energy Overview','Your household’s measured consumption at a glance.')+`<div class="grid">
+ ${kpi('Hourly records',o.records,'db','#4aa8ff')}${kpi('Mean load',o.mean_kwh,'bolt','#34e0a1','',2,'kWh per hour')}${kpi('Peak hour',o.max_kwh,'peak','#a78bfa','',2,'kWh')}
+ ${kpi('7-day trend',Math.abs(d),'trend',d>0?'#ff6b7d':'#34e0a1',`<span class="chip ${d>0?'up':'dn'}">${d>0?'▲ rising':'▼ falling'} vs prior week</span>`,1,'%')}</div>
+ <div class="card"><h3>Consumption over time ${seg('rg',[['14|hour','14 days'],['90|day','90 days'],['720|week','2 years']],'90|day')}</h3><div class="cv"><canvas id="c"></canvas></div><div class="note">Record covers ${fmt(o.start,{dateStyle:'medium'})} to ${fmt(o.end,{dateStyle:'medium'})}.</div></div>
+ <div class="card"><h3>Typical day · average kWh by hour</h3><div class="cv s"><canvas id="c2"></canvas></div></div>`;count();
+ const draw=async()=>{const[a,b]=segv('rg').split('|'),h=await api(`/history?days=${a}&bucket=${b}`);
+  line('#c',h.map(x=>fmt(x.timestamp,{day:'2-digit',month:'short',year:'2-digit'})),[{label:'Measured',data:h.map(x=>x.kwh),borderColor:'#34e0a1',fill:true,backgroundColor:grad('#34e0a1')}])};
+ segbind('rg',()=>draw().catch(fail));draw().catch(fail);
+ line('#c2',hr.map((_,i)=>i+':00'),[{label:'Avg kWh',data:hr,backgroundColor:hr.map(v=>v>Math.max(...hr)*.75?'#fbbf24':'#4aa8ff'),borderRadius:6,borderWidth:0}],{type:'bar'})},
+async forecast(){$('#app').innerHTML=head('Forecast','Recursive hourly forecast: each prediction feeds the next hour’s lags. Model output, not measurement.')+
+ `<div class="card"><div class="row">${seg('hz',[['24','24h'],['48','48h'],['72','72h'],['168','7 days']],'24')}${seg('md',[['hgb','Gradient Boosting'],['rf','Random Forest']],'hgb')}</div><div class="cv"><canvas id="c"></canvas></div></div>
+ <div class="grid" id="fs"></div>
+ <div class="card"><h3>Single-hour prediction</h3><div class="row"><label>Timestamp<input id="pt" type="datetime-local" value="2010-11-27T08:00"></label><label>Last hour kWh<input id="l1" type="number" step=".01" value="1.2"></label><label>Same hour yesterday<input id="l24" type="number" step=".01" value="1.0"></label><label>Same hour last week<input id="l168" type="number" step=".01" value="1.1"></label><button class="go" id="pp">Predict ⚡</button></div><div class="res" id="pr">— kWh</div></div>`;
+ const run=async()=>{const[h,hist]=await Promise.all([post('/forecast',{hours:+segv('hz'),model:segv('md')}),api('/history?days=3')]);
+  const n=hist.length,L=[...hist,...h].map(x=>fmt(x.timestamp)),tot=h.reduce((a,x)=>a+x.kwh,0),pk=h.reduce((a,x)=>x.kwh>a.kwh?x:a,h[0]);
+  line('#c',L,[{label:'Measured',data:[...hist.map(x=>x.kwh),...h.map(()=>null)],borderColor:'#34e0a1',fill:true,backgroundColor:grad('#34e0a1',.3)},
+  {label:'Forecast',data:[...hist.map((_,i)=>i==n-1?hist[i].kwh:null),...h.map(x=>x.kwh)],borderColor:'#fbbf24',borderDash:[7,5],fill:true,backgroundColor:grad('#fbbf24',.3)}]);
+  $('#fs').innerHTML=kpi('Forecast total',tot,'bolt','#fbbf24','',1,'kWh')+kpi('Average load',tot/h.length,'clock','#4aa8ff','',2,'kWh per hour')+kpi('Peak forecast',pk.kwh,'peak','#ff6b7d',`<span class="chip neu">${fmt(pk.timestamp)}</span>`,2,'kWh');count()};
+ segbind('hz',()=>run().catch(fail));segbind('md',()=>run().catch(fail));
+ $('#pp').onclick=async()=>{try{const r=await post('/predict',{timestamp:$('#pt').value,lag_1:+$('#l1').value,lag_24:+$('#l24').value,lag_168:+$('#l168').value,model:segv('md')});$('#pr').textContent=r.kwh+' kWh'}catch(e){fail(e)}};run().catch(fail)},
+async anomalies(){$('#app').innerHTML=head('Anomaly Detection','Readings far from the household’s own norm for that hour of day (robust z-score).')+
+ `<div class="card"><div class="row"><label>Sensitivity threshold: <b id="tv" style="color:var(--g1)">3.5</b><input id="th" type="range" min="1.5" max="8" step=".5" value="3.5"></label><label>Scan window${seg('hr',[['168','7d'],['336','14d'],['720','30d']],'336')}</label><button class="go" id="go">Scan now</button></div></div><div id="out"></div>
+ <div class="note">Unusual is not the same as wasteful: being awake at 03:00 looks anomalous. Total household load only, so no reading can be attributed to an appliance.</div>`;
+ $('#th').oninput=e=>$('#tv').textContent=e.target.value;
+ const run=async()=>{const a=await api(`/anomalies?threshold=${$('#th').value}&hours=${segv('hr')}`),mx=Math.max(1,...a.items.map(i=>Math.abs(i.score))),hi=a.items.filter(i=>i.severity=='high').length;
+  $('#out').innerHTML=`<div class="grid">${kpi('Flagged readings',a.count,'peak','#ff6b7d')}${kpi('Hours scanned',a.scanned_hours,'clock','#4aa8ff')}${kpi('High severity',hi,'bolt','#fbbf24')}${kpi('Flag rate',a.scanned_hours?a.count/a.scanned_hours*100:0,'trend','#a78bfa','',1,'%')}</div>
+  <div class="card"><h3>Top flagged hours</h3><div class="al h"><span>When</span><span>Deviation</span><span>Measured / typical</span><span>Severity</span></div>${a.items.length?a.items.map((i,x)=>`<div class="al" style="animation-delay:${x*30}ms"><span>${fmt(i.timestamp)}</span><div class="meter ${i.severity=='high'?'hi':''}"><b style="width:0" data-w="${Math.abs(i.score)/mx*100}"></b></div><span>${i.kwh} / ${i.baseline_kwh}</span><span class="tag ${i.severity}">${i.severity}</span></div>`).join(''):'<p style="color:var(--g1)">✓ Nothing unusual at this sensitivity.</p>'}</div>`;count();
+  setTimeout(()=>$$('[data-w]').forEach(b=>b.style.width=b.dataset.w+'%'),60)};
+ $('#go').onclick=()=>run().catch(fail);segbind('hr',()=>run().catch(fail));run().catch(fail)},
+async twin(){const p=await api('/profile'),vs=p.map(x=>x.kwh),mx=Math.max(...vs),mn=Math.min(...vs),pk=p.find(x=>x.kwh==mx),lo=p.find(x=>x.kwh==mn);
+ const st=[[0,'#1b2440'],[.25,'#2b6cb0'],[.5,'#34e0a1'],[.75,'#fbbf24'],[1,'#ff6b7d']],hx=h=>parseInt(h,16),
+ col=t=>{for(let i=1;i<st.length;i++)if(t<=st[i][0]){const a=st[i-1],b=st[i],f=(t-a[0])/(b[0]-a[0]),A=a[1],B=b[1];return'#'+[1,3,5].map(k=>Math.round(hx(A.substr(k,2))+(hx(B.substr(k,2))-hx(A.substr(k,2)))*f).toString(16).padStart(2,'0')).join('')}return st[4][1]};
+ let g='<div></div>'+[...Array(24).keys()].map(h=>`<div style="text-align:center">${h%3?'':h}</div>`).join('');
+ for(let d=0;d<7;d++){g+=`<div>${DAYS[d]}</div>`;for(let h=0;h<24;h++){const c=p.find(x=>x.day==d&&x.hour==h);g+=`<div class="c" title="${DAYS[d]} ${h}:00 — ${c?c.kwh.toFixed(2):'n/a'} kWh" style="background:${c?col((c.kwh-mn)/(mx-mn)):'transparent'}"></div>`}}
+ const wk=p.filter(x=>x.day<5),we=p.filter(x=>x.day>=5),av=a=>a.reduce((s,x)=>s+x.kwh,0)/a.length;
+ $('#app').innerHTML=head('Digital Twin','The observed shape of the household: mean kWh for every hour of every weekday.')+`<div class="ins">
+ ${kpi('Busiest slot',pk.kwh,'peak','#ff6b7d',`<span class="chip up">${DAYS[pk.day]} ${pk.hour}:00</span>`,2,'kWh')}${kpi('Quietest slot',lo.kwh,'leaf','#34e0a1',`<span class="chip dn">${DAYS[lo.day]} ${lo.hour}:00</span>`,2,'kWh')}
+ ${kpi('Weekday avg',av(wk),'clock','#4aa8ff','',2,'kWh')}${kpi('Weekend avg',av(we),'clock','#a78bfa','',2,'kWh')}</div>
+ <div class="card"><h3>Weekly load heatmap<span class="leg" title="low → high"></span></h3><div class="hm">${g}</div><div class="note">Hover a cell for its value. Cool blue = low load, green = moderate, amber to red = peak.</div></div>`;count()},
+async optimize(){$('#app').innerHTML=head('Optimizer','Hypothetical reduction scenarios applied to the forecast. Simulated, not guaranteed.')+
+ `<div class="card"><div class="row"><label>Horizon${seg('hz',[['24','24h'],['48','48h'],['72','72h']],'24')}</label><label>Max reduction %<input id="mx" type="number" value="25" style="width:110px"></label><label>Price / kWh<input id="pc" type="number" step=".01" value="0.15" style="width:110px"></label><button class="go" id="go">Simulate ✨</button></div></div><div id="out"></div>
+ <div class="card"><h3>Baseline vs simulated load</h3><div class="cv"><canvas id="c"></canvas></div></div>`;
+ let R;const show=pc=>{const s=R.scenarios.find(x=>x.reduction_percent==pc);$$('.sc button').forEach(b=>b.classList.toggle('on',+b.dataset.p==pc));
+  $('#hr').innerHTML=`<div><div class="k">${pc==R.recommended?'Recommended scenario':'Selected scenario'}</div><div class="big">${pc}% reduction</div></div>
+  <div><div class="k">Energy saved</div><div class="v">${s.saved_kwh}<small> kWh</small></div></div><div><div class="k">Cost saved</div><div class="v">${s.saved_cost}</div></div><div><div class="k">CO₂ avoided</div><div class="v">${s.saved_co2_kg}<small> kg</small></div></div>`};
+ const run=async()=>{R=await post('/optimize',{horizon:+segv('hz'),max_reduction:+$('#mx').value,price:+$('#pc').value,reductions:[5,10,15,20,25]});
+  $('#out').innerHTML=`<div class="card hero" id="hr"></div><div class="sc">${R.scenarios.map(s=>`<button data-p="${s.reduction_percent}" class="${s.feasible?'':'nf'}">${s.reduction_percent==R.recommended?'<i class="tg">BEST</i>':''}<b>${s.reduction_percent}%</b><span>${s.saved_kwh} kWh · ${s.feasible?'feasible':'not feasible'}</span></button>`).join('')}</div>
+  <div class="note" style="margin-bottom:18px">${R.note} Score = 0.7 × savings + 0.3 × conservativeness. No hour is cut below the household’s own 20th-percentile floor.</div>`;
+  $$('.sc button').forEach(b=>b.onclick=()=>show(+b.dataset.p));show(R.recommended??R.scenarios[0].reduction_percent);
+  if(R.chart)line('#c',R.chart.map(x=>fmt(x.timestamp)),[{label:'Baseline forecast',data:R.chart.map(x=>x.baseline),borderColor:'#fbbf24',fill:false},{label:'Simulated',data:R.chart.map(x=>x.simulated),borderColor:'#34e0a1',fill:'-1',backgroundColor:'#34e0a133'}])};
+ $('#go').onclick=()=>run().catch(fail);segbind('hz',()=>run().catch(fail));run().catch(fail)},
+async models(){const m=await api('/models'),R=m.results,N={baseline:'Previous-hour baseline',rf:'Random Forest',hgb:'Gradient Boosting'},ks=Object.keys(R).sort((a,b)=>R[a].mae-R[b].mae),mx=Math.max(...ks.map(k=>R[k].mae)),b=R.baseline.mae;
+ const imp=k=>Object.entries(m.importances[k]).sort((a,b)=>b[1]-a[1]).map(([f,v])=>`<div class="bar"><span>${f}</span><div class="meter"><b style="width:0" data-w="${v*100}"></b></div><em>${(v*100).toFixed(1)}%</em></div>`).join('');
+ $('#app').innerHTML=head('Model Lab','Test-set error on a chronological hold-out, never seen in training.')+`<div class="card"><h3>Leaderboard · lower error is better</h3>${ks.map((k,i)=>`<div class="lb ${i==0?'w':''}"><div class="rk">${i+1}</div><div><div style="display:flex;justify-content:space-between;font-weight:600"><span>${N[k]} ${i==0?'🏆':''}</span><span>MAE ${R[k].mae} · RMSE ${R[k].rmse} ${k!='baseline'?`<span class="chip dn">−${((1-R[k].mae/b)*100).toFixed(1)}% vs baseline</span>`:''}</span></div><div class="meter" style="margin-top:8px"><b style="width:0" data-w="${R[k].mae/mx*100}"></b></div></div></div>`).join('')}
+ <div class="note">Evaluated on ${m.eval_window.rows.toLocaleString()} hours: ${fmt(m.eval_window.start,{dateStyle:'medium'})} to ${fmt(m.eval_window.end,{dateStyle:'medium'})}.</div></div>
+ <div class="g2"><div class="card"><h3>Random Forest · feature importance</h3>${imp('rf')}</div><div class="card"><h3>Gradient Boosting · feature importance</h3>${imp('hgb')}</div></div>`;
+ setTimeout(()=>$$('[data-w]').forEach(e=>e.style.width=e.dataset.w+'%'),60)}};
+async function route(){const k=location.hash.replace('#/','')||'overview';$$('nav a').forEach(a=>a.classList.toggle('on',a.hash=='#/'+k));
+ Object.values(CH).forEach(c=>c.destroy());sk();window.scrollTo(0,0);
+ try{await(pages[k]||pages.overview)();$('#app').firstElementChild.parentElement.classList.remove('page');void $('#app').offsetWidth;$('#app').classList.add('page')}catch(e){$('#app').innerHTML='';fail(e)}}
+addEventListener('hashchange',route);route();
+api('/health').then(()=>{$('#st').className='st ok';$('#st span').textContent='API online'}).catch(()=>{$('#st span').textContent='API offline'});
+</script></body></html>
