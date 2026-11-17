@@ -11,7 +11,7 @@
 ![Pandas](https://img.shields.io/badge/Pandas-Data-150458?logo=pandas&logoColor=white)
 ![Chart.js](https://img.shields.io/badge/Chart.js-Dashboard-FF6384?logo=chartdotjs&logoColor=white)
 
-[**🚀 Live Demo**](https://YOUR-APP.onrender.com) · [API Docs](https://YOUR-APP.onrender.com/docs)
+[**🚀 Live Demo**](https://wattwise-6m9o.onrender.com/) · [API Docs](https://wattwise-6m9o.onrender.com/docs)
 
 ![Dashboard](docs/overview.png)
 
